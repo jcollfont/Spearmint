@@ -191,7 +191,7 @@ import scipy.linalg      as spla
 import scipy.optimize    as spo
 import scipy.io          as sio
 import scipy.stats       as sps
-import scipy.weave
+import weave
 from collections import defaultdict
 
 from .gp                                     import GP
@@ -214,7 +214,7 @@ except:
 
 # I intentionally do not make this options a property of the class, because I don't
 # want to override the defaults of the GP class that I am inheriting from. Instead,
-# these defaults add to the GP defaults, and in case they disagree the defaults here are used. 
+# these defaults add to the GP defaults, and in case they disagree the defaults here are used.
 # So, in order of most to least priority: config file, defaults here, defaults in gp.py
 # UPDATE: moved to parsing
 
@@ -251,7 +251,7 @@ class GPClassifier(GP):
             self.sigmoid            = lambda x: np.greater_equal(x, 0)
             self.sigmoid_derivative = lambda x: 0.
             self.sigmoid_inverse    = lambda x: 0.
-        
+
         # The constraint is that p=s(f) > 1-epsilon
         # where s if the sigmoid and f is the latent function value, and p is the binomial probability
         # This is only in more complicated situations. The main situation where this is used
@@ -288,7 +288,7 @@ class GPClassifier(GP):
         latent_values = np.zeros(self._inputs.shape[0])
         for i in xrange(self._inputs.shape[0]):
             key = str(hash(self._inputs[i].tostring()))
-            
+
             if key in latent_values_dict:
                 latent_values[i] = latent_values_dict[key]
             else:
@@ -308,31 +308,31 @@ class GPClassifier(GP):
         for i in xrange(num_samples):
             if self.options['verbose']:
                 sys.stderr.write('\b'*11+'%05d/%05d' % (i, num_samples))
-            
+
             # Sample hypers
             for sampler in self._samplers:
-                sampler.sample(self) 
+                sampler.sample(self)
 
             # Sample latent values
             self.latent_values_sampler.sample(self)
 
             self.chain_length += 1
-        
+
         if self.options['verbose']:
             sys.stderr.write('\n')
 
 
     def _collect_samples(self, num_samples):
-        
+
         for sampler in self._samplers:
             print '  Sampling %d samples of %s with %s' % (num_samples, ', '.join(['%s(%d)'%(param.name, param.size()) for param in sampler.params]), sampler.__class__.__name__)
         print '  Sampling latent values (size %d) with %s' % (self.latent_values.size(), self.latent_values_sampler.__class__.__name__)
-                
 
-        if self.options['verbose']:    
+
+        if self.options['verbose']:
             sys.stderr.write('GPClassifer: sampling %s: ' % ', '.join(self.params.keys()))
             sys.stderr.write('%05d/%05d' % (0, num_samples))
-        
+
         hypers_list        = []
         latent_values_list = []
         for i in xrange(num_samples):
@@ -351,7 +351,7 @@ class GPClassifier(GP):
 
         if self.options['verbose']:
             sys.stderr.write('\n')
-        
+
         self._hypers_list = hypers_list
         self._latent_values_list = latent_values_list
 
@@ -363,7 +363,7 @@ class GPClassifier(GP):
         # TODO: move this into the parsing module as well --
         # to do this properly i think the kernels should no longer "own" the default priors
         # used. it would be good to have all the defaults in one place, namely the parsing
-        # module. 
+        # module.
         nondefault_priors = defaultdict(lambda: None)
         nondefault_priors.update(parse_priors_from_config(self.options['priors']))
 
@@ -388,7 +388,7 @@ class GPClassifier(GP):
         # Build the component kernels
         input_kernel           = Matern52(self.num_dims, prior=nondefault_priors['ls'])
         stability_noise_kernel = Noise(self.num_dims) # Even if noiseless we use some noise for stability
-        
+
         # make a noisy version if necessary
         # In a classifier GP the notion of "noise" is really just the scale.
         if self.noiseless:
@@ -437,7 +437,7 @@ class GPClassifier(GP):
         # self._samplers.append(SliceSampler(*to_sample, compwise=False, thinning=self.options['thinning']))
 
         self.latent_values_sampler = EllipticalSliceSampler(self.latent_values, thinning=self.options['ess_thinning'])
-       
+
     @property
     def counts(self):
         return self._values
@@ -461,7 +461,7 @@ class GPClassifier(GP):
     # this is messed up. these are *NOT* the observed values. TODO
     @property
     def observed_values(self):
-        if self.latent_values is not None:  
+        if self.latent_values is not None:
             return self.latent_values.value
         else:
             return np.array([])
@@ -472,7 +472,7 @@ class GPClassifier(GP):
         self._set_latent_values_from_dict(self._latent_values_list[state])
 
     def pi(self, pred, compute_grad=False):
-        return super(GPClassifier, self).pi( pred, compute_grad=compute_grad, 
+        return super(GPClassifier, self).pi( pred, compute_grad=compute_grad,
             C=self.sigmoid_inverse(self._one_minus_epsilon) )
 
     def log_binomial_likelihood(self, y=None):
@@ -484,8 +484,8 @@ class GPClassifier(GP):
             y = self.latent_values.value
 
         p = self.sigmoid(y)
-        
-        # Note on the below: the obvious implementation would be 
+
+        # Note on the below: the obvious implementation would be
         #    return np.sum( pos*np.log(p) + neg*np.log(1-p) )
         # The problem is, if pos = 0, and p=0, we will get a 0*-Inf = nan
         # This messes things up. So we use the safer implementation below that ignores
@@ -506,7 +506,7 @@ class GPClassifier(GP):
         # Save the latent values as a dict with keys as hashes of the data
         # so that each latent value is associated with its input
         # then when we load them in we know which ones are which
-        gp_dict['latent values'] = {str(hash(self._inputs[i].tostring())) : self.latent_values.value[i] 
+        gp_dict['latent values'] = {str(hash(self._inputs[i].tostring())) : self.latent_values.value[i]
                 for i in xrange(self._inputs.shape[0])}
 
         gp_dict['chain length'] = self.chain_length
@@ -517,6 +517,3 @@ class GPClassifier(GP):
         self._set_params_from_dict(gp_dict['hypers'])
         self._set_latent_values_from_dict(gp_dict['latent values'])
         self.chain_length = gp_dict['chain length']
-
-
-
