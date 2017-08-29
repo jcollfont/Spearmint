@@ -8,6 +8,6 @@
 *.DS_Store
 *.pdf
 *.py~
-
-
-
+build/*
+temp/*
+spearmint.egg-info/*
