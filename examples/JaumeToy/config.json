@@ -1,0 +1,25 @@
+{
+    "language"        : "PYTHON",
+    "main_file"       : "jaumeToy.py",
+    "experiment-name" : "jaumeToy",
+    "acquisition"       : "PES",
+    "max_finished_jobs" : 50,
+    "variables" : {
+        "x" : {
+            "type" : "FLOAT",
+            "size" : 1,
+            "min"  : -1,
+            "max"  : 1
+        },
+        "y" : {
+            "type" : "FLOAT",
+            "size" : 1,
+            "min"  : -1,
+            "max"  : 1
+        }
+    },
+	"tasks" : {
+		"f"  : { "type" : "objective"  },
+		"c1" : { "type" : "constraint" }
+	}
+}
