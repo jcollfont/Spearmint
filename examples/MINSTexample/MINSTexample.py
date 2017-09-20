@@ -3,16 +3,16 @@
 import sys
 import os
 import numpy as np
-sys.path.insert(0, '/Users/jaume/Documents/Research/deepLearning_training/')
-import MINST_keras_example as testEx
+sys.path.insert(0, '/Users/jaume/Documents/Research/Spearmint/examples/MINSTexample/')
+import MINST_keras_remote as testEx
 
 
 dataset = testEx.setTestandTrain()
 
 def main(job_id, params):
 
-    dropout_In = float(params('dropout_In'))
-    dropout_Hi = float(params('dropout_Hi'))
+    dropout_In = float(params['dropout_In'])
+    dropout_Hi = float(params['dropout_Hi'])
     momentum = float(params['momentum'])
     weightDecay = float(params['weightDecay'])
     maxWeight = float(params['maxWeight'])
@@ -20,7 +20,12 @@ def main(job_id, params):
     decayRate = float(params['decayRate'])
 
 
-    output = testEx.run_MINST_example(dataset, dropout_In, dropout_Hi, momentum, weightDecay, maxWeight, learningRate, decayRate)
+    output = testEx.run_MINST_example(dataset, 
+                                      10**dropout_In, 10**dropout_Hi, 
+                                      10**momentum, 10**weightDecay, 
+                                      maxWeight, 10**learningRate, 
+                                      10**decayRate)
+    
     f  = np.array([-output['f'][1]])
     c1 = np.array([output['c']])
 
