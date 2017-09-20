@@ -51,7 +51,7 @@ def setTestandTrain():
 def run_MINST_example(dataset, dropout_In, dropout_Hid, momentVal, weightDecay, maxWeight, learningRate, decayRate):
 
     batch_size = 128
-    epochs = 20
+    epochs = 10
 
     x_test = dataset['test'][0]
     y_test = dataset['test'][1]
@@ -116,16 +116,18 @@ if __name__ == '__main__':
                         help='path to the submission folder')
     parser.add_argument('-dr', '--decayRate', required=True,
                         help='path to the submission folder')
+    parser.add_argument('-jobID', '--jobID', required=True,
+                        help='path to the submission folder')
     args = parser.parse_args()
 
 
     dataset = setTestandTrain()
-    output = run_MINST_example(dataset, float(args.dropout_In), float(args.dropout_Hid),
-                               float(args.momentVal), float(args.weightDecay), float(args.maxWeight), 
-                               float(args.learningRate), float(args.decayRate))
+    output = run_MINST_example(dataset, 10**float(args.dropout_In), 10**float(args.dropout_Hid),
+                               10**float(args.momentVal), 10**float(args.weightDecay), float(args.maxWeight), 
+                               10**float(args.learningRate), 10**float(args.decayRate))
 
     print(json.dumps(output))
-
-    f = open( 'output.json' ,'w')
+    
+    f = open( 'output"+ str(args.jobID)+ ".json' ,'w')
     f.write(json.dumps(output))
     f.close()

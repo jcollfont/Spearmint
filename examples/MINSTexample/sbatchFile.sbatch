@@ -4,10 +4,10 @@
 #SBATCH --job-name=NN_BO
 ##############
 # set output
-#SBATCH --output=/home/jcollfont/tmp/mdcs-test_1.out
+#SBATCH --output=/home/jcollfont/tmp/mdcs-test_$8.out
 ###########
 # error dump
-#SBATCH --error=/home/jcollfont/tmp/mdcs-test_1.err
+#SBATCH --error=/home/jcollfont/tmp/mdcs-test_$8.err
 ###########
 # number of tsasks
 #SBATCH --exclusive
@@ -17,4 +17,4 @@
 # num nodes
 #SBATCH -N 1
 
-python /home/jcollfont/Documents/Research/Spearmint/examples/MINSTexample/MINST_keras_remote.py -dIn 0.2 -dHi 0.2 -mo 0.0 -wD 0.0 -wM 10 -lr 0.01 -dr 0.0
+python /home/jcollfont/Documents/Research/Spearmint/examples/MINSTexample/MINST_keras_remote.py -dIn $1 -dHi $2 -mo $3 -wD $4 -wM $5 -lr $6 -dr $7 -jobID $8
