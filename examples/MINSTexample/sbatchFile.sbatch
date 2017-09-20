@@ -17,4 +17,4 @@
 # num nodes
 #SBATCH -N 1
 
-python /home/jcollfont/Documents/Research/Spearmint/examples/MINSTexample/MINST_keras_remote.py '-dIn' 0.2 '-dHi' 0.2 '-mo' 0.0 '-wD' 0.0 '-wM' 10
+python /home/jcollfont/Documents/Research/Spearmint/examples/MINSTexample/MINST_keras_remote.py -dIn 0.2 -dHi 0.2 -mo 0.0 -wD 0.0 -wM 10 -lr 0.01 -dr 0.0
