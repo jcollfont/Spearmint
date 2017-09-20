@@ -20,6 +20,7 @@ from keras.layers import Dense, Dropout
 from keras.optimizers import SGD
 from keras import regularizers
 from keras.constraints import maxnorm
+from keras.callbacks import EarlyStopping
 
 
 
@@ -29,8 +30,8 @@ def setTestandTrain():
     num_classes = 10
 
     # the data, shuffled and split between train and test sets
-#    (x_train, y_train), (x_test, y_test) = mnist.load_data()
-    (x_train, y_train), (x_test, y_test) = mnist.load_data(path="/home/jcollfont/Documents/Research/Spearmint/examples/MINSTexample/mnist.npz")
+    (x_train, y_train), (x_test, y_test) = mnist.load_data()
+#    (x_train, y_train), (x_test, y_test) = mnist.load_data(path="/home/jcollfont/Documents/Research/Spearmint/examples/MINSTexample/mnist.npz")
 
     x_train = x_train.reshape(60000, 784)
     x_test = x_test.reshape(10000, 784)
@@ -38,6 +39,8 @@ def setTestandTrain():
     x_test = x_test.astype('float32')
     x_train /= 255
     x_test /= 255
+    x_train -= 0.5
+    x_test -= 0.5
     print(x_train.shape[0], 'train samples')
     print(x_test.shape[0], 'test samples')
 
@@ -65,9 +68,9 @@ def run_MINST_example(dataset, dropout_In, dropout_Hid, momentVal, weightDecay, 
     # Hidden layers
     model.add(Dense(512, activation='relu',kernel_regularizer=regularizers.l2(weightDecay), kernel_constraint=maxnorm(maxWeight)))
     model.add(Dropout(dropout_Hid))
-    model.add(Dense(512, activation='relu',kernel_regularizer=regularizers.l2(weightDecay), kernel_constraint=maxnorm(maxWeight)))
+    model.add(Dense(256, activation='relu',kernel_regularizer=regularizers.l2(weightDecay), kernel_constraint=maxnorm(maxWeight)))
     model.add(Dropout(dropout_Hid))
-    model.add(Dense(512, activation='relu',kernel_regularizer=regularizers.l2(weightDecay), kernel_constraint=maxnorm(maxWeight)))
+    model.add(Dense(128, activation='relu',kernel_regularizer=regularizers.l2(weightDecay), kernel_constraint=maxnorm(maxWeight)))
     model.add(Dropout(dropout_Hid))
 
     # Softmax
@@ -75,6 +78,7 @@ def run_MINST_example(dataset, dropout_In, dropout_Hid, momentVal, weightDecay, 
 
     model.summary()
 
+    es = EarlyStopping(monitor='val_loss', min_delta=10**-6, patience=3, verbose=1, mode='auto')
     model.compile(loss='categorical_crossentropy',
                   optimizer=SGD(lr=learningRate, momentum=momentVal, decay=decayRate, nesterov=False),
                   metrics=['accuracy'])
@@ -83,7 +87,8 @@ def run_MINST_example(dataset, dropout_In, dropout_Hid, momentVal, weightDecay, 
                 batch_size=batch_size,
                 epochs=epochs,
                 verbose=1,
-                validation_data=(x_test, y_test))
+                validation_data=(x_test, y_test),
+                callbacks=[es])
 
 
     score = model.evaluate(x_test, y_test, verbose=0)
@@ -96,7 +101,7 @@ def run_MINST_example(dataset, dropout_In, dropout_Hid, momentVal, weightDecay, 
     computTime = (time.time() - start_time)/1000
     print("--- %s seconds ---" % computTime)
 
-    return {'f': score, 'c': computTime}
+    return {'f': score[1], 'c': computTime}
 
 
 if __name__ == '__main__':
@@ -122,8 +127,8 @@ if __name__ == '__main__':
 
 
     dataset = setTestandTrain()
-    output = run_MINST_example(dataset, 10**float(args.dropout_In), 10**float(args.dropout_Hid),
-                               10**float(args.momentVal), 10**float(args.weightDecay), float(args.maxWeight), 
+    output = run_MINST_example(dataset, float(args.dropout_In), float(args.dropout_Hid),
+                               float(args.momentVal), 10**float(args.weightDecay), float(args.maxWeight), 
                                10**float(args.learningRate), 10**float(args.decayRate))
 
     print(json.dumps(output))

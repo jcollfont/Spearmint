@@ -4,11 +4,10 @@ import sys
 import os
 import numpy as np
 sys.path.insert(0, '/Users/jaume/Documents/Research/Spearmint/examples/MINSTexample/')
-import MINST_keras_remote as testEx
 import json
+import time
 
 
-dataset = testEx.setTestandTrain()
 
 def main(job_id, params):
 
@@ -23,7 +22,7 @@ def main(job_id, params):
     # setup command
     paramsSTR = " " + str(dropout_In) + " " + str(dropout_Hi) +  " " + str(momentum) + "  " + str(weightDecay) +  "  " + str(maxWeight) + "  " + str(learningRate)  + "  " + str(decayRate) + " " + str(job_id)
                 
-    command = "sbatch " + "/Users/jaume/Documents/Research/Spearmint/examples/MINSTexample/sbatchFile.sbatch "
+    command = "sbatch " + "/home/jcollfont/Documents/Research/Spearmint/examples/MINSTexample/sbatchFile.sbatch "
 
     # Connect to server and send request
     os.system("ssh -f jcollfont@discovery2.neu.edu " + command + paramsSTR)
@@ -32,6 +31,7 @@ def main(job_id, params):
     waiting = 1
     while waiting:
             waiting = os.system("scp jcollfont@discovery2.neu.edu:/home/jcollfont/output.json  ./")
+            time.sleep(10*60)
             
     os.system("ssh -f jcollfont@discovery2.neu.edu " + "rm /home/jcollfont/output.json")
     
@@ -45,5 +45,3 @@ def main(job_id, params):
     c1 = np.array([outputSTR['c']])
 
     return {'f': f, 'c1': c1}
-
-\
