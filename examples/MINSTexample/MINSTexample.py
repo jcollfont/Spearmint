@@ -72,7 +72,7 @@ def main(job_id, params):
                                       maxWeight, 10**learningRate, 
                                       10**decayRate)
     
-    f  = np.array([-output['f']])
-    c1 = 5 - np.array([output['c']])*10000
+    f  = np.array([output['f']])
+    c1 = np.array([output['c']])
 
     return {'f': f, 'c1': c1}

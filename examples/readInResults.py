@@ -5,9 +5,13 @@ import scipy.io
 import os
 
 ###Settings for toy experiment
-path = '/Users/jaume/Documents/Research/Spearmint/results/toy_all/output_repeat_'
+#path = '/Users/jaume/Documents/Research/Spearmint/results/toy_all/output_repeat_'
+#path = '/Volumes/spiral/Users/jcollfont/gato/results/Spearmint/resultsDiscovery/MINSTexample/output_repeat_'
+#path = '/Volumes/spiral/Users/jcollfont/gato/results/Spearmint/results/simpleExp_all/output_repeat_'
+path = '/Volumes/spiral/Users/jcollfont/gato/results/Spearmint/results/toy_all/output_repeat_'
+#path = '/Users/jaume/Desktop/output_repeat_'
 
-numRepeats = 60
+numRepeats = 82
 numFiles = 130
 funcEvals = ['\'c2\'','\'c1\'','\'f\'']
 #funcEvals = ['\'c1\'','\'f\'']
@@ -76,23 +80,40 @@ for rep in range(numRepeats):
 fvalue = fvalue[:,:100]
 c1value = c1value[:,:100]
 c2value = c2value[:,:100]
-    
+
+### TOY    
 for rep in range(numRepeats):
     
     validSol = (c1value[rep,:]>=0)&(c2value[rep,:]>=0)
     
-    print 'Minimum: ' + str( np.min(fvalue[rep,validSol]) )
-    
-    plt.plot(fvalue[rep,validSol], label= 'f' + str(rep))
-    #plt.plot(c1value, label='c1')
-    #plt.plot(c2value, label='c2')
-    plt.legend();
+    if any(validSol):
+        print 'Minimum: ' + str( np.min(fvalue[rep,validSol]) )
+        
+        plt.plot(fvalue[rep,validSol], label= 'f' + str(rep))
+        #plt.plot(c1value, label='c1')
+        #plt.plot(c2value, label='c2')
+        plt.legend();
 
 scipy.io.savemat('/Users/jaume//Desktop/toyExample.mat', mdict={'fval': fvalue, 'c1': c1value, 'c2': c2value})
 
 
 
+# SIMPLE EXPERIMENT 2
+#for rep in range(numRepeats):
+#    
+#    validSol = (c1value[rep,:]>=0)
+#    
+#    if any(validSol):
+#        print 'Minimum: ' + str( np.min(fvalue[rep,validSol]) )
+#        
+#        plt.plot(fvalue[rep,validSol], label= 'f' + str(rep))
+#        #plt.plot(c1value, label='c1')
+#        #plt.plot(c2value, label='c2')
+#        plt.legend();
 #
+#scipy.io.savemat('/Users/jaume//Desktop/simpleExample2.mat', mdict={'fval': fvalue, 'c1': c1value})
+
+
 #for rep in range(numRepeats):
 #    
 #    validSol = (c1value[rep,:]>=0)
@@ -104,5 +125,5 @@ scipy.io.savemat('/Users/jaume//Desktop/toyExample.mat', mdict={'fval': fvalue, 
 #    #plt.plot(c2value, label='c2')
 #    plt.legend();
 #
-#scipy.io.savemat('/Users/jaume//Desktop/simpleExample2.mat', mdict={'fval': fvalue, 'c1': c1value})
-
+#scipy.io.savemat('/Users/jaume/Desktop/MNISTexample.mat', mdict={'fval': fvalue, 'c1': c1value})
+#

@@ -100,8 +100,10 @@ def run_MINST_example(dataset, dropout_In, dropout_Hid, momentVal, weightDecay, 
     model.predict(x_test, batch_size=1000, verbose=0)
     computTime = (time.time() - start_time)/1000
     print("--- %s seconds ---" % computTime)
+    
+    computTime = 7 - computTime*10000
 
-    return {'f': score[1], 'c': computTime}
+    return {'f': -score[1], 'c': computTime}
 
 
 if __name__ == '__main__':
